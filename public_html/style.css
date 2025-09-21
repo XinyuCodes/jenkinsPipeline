@@ -1,0 +1,31 @@
+/* h1 {color: red} */
+ .nav-link.active{
+    font-weight: bold !important;
+    color:white !important;
+    background-color: #007bff;
+    border-radius: 4px;
+}
+
+.nav-link:hover {
+    background-color: #87CEEB;
+    color: #333;
+} 
+
+.nav-link {
+    background-color: lightblue;
+    color: #333;
+    border-radius: 8px;
+    margin: 0 1px;
+}
+
+.custom-nav {
+    display: flex !important;
+    width: 100% !important;
+}
+
+.custom-nav.nav-link {
+    flex: 1;
+    text-align: center;
+    border: 1px solid lightblue;
+    margin: 0 1px;
+}

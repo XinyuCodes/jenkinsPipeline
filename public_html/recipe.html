@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recipe Catalogue - Culinary Craft</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+</head>
+
+<style>
+    * {
+        font-family: Arial, Helvetica, sans-serif !important;
+    }
+</style>
+
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">
+                <i class="fas fa-utensils"></i> Culinary Craft
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="about.html">About</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="recipe.html">Recipes</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="technique.html">Techniques</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="contact.html">Contact</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Recipe Header -->
+    <div class="bg-dark text-white text-center py-5" style="margin-top: 0px;">
+        <div class="container">
+            <h1 class="display-4 fw-bold">Recipe Catalogue</h1>
+            <p class="lead">Discover our collection of tested and perfected recipes</p>
+        </div>
+    </div>
+
+    <!-- Recipe Categories -->
+    <div class="py-5">
+        <div class="container">
+            
+            <!-- Appetizers -->
+            <div class="mb-5">
+                <h3 class="mb-4"><i class="fas fa-leaf text-success me-2"></i>Appetizers & Starters</h3>
+                <div class="row g-4">
+                    <div class="col-lg-4 col-md-6">
+                        <div class="card h-100">
+                            <img class="card-img-top" src="bruschetta.jpg" alt="bruschetta" style="height: 200px; object-fit: cover;">
+                            <div class="card-body">
+                                <h5 class="card-title">Tasty Bruschetta al Pomodoro</h5>
+                                <p class="card-text">Toasted bread topped with fresh tomatoes, basil, and garlic</p>
+                                <a href="https://www.allrecipes.com/recipe/20547/bruschetta-al-pomodoro/" class="btn btn-primary">View Recipe</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-md-6">
+                        <div class="card h-100">
+                            <img class="card-img-top" src="stuffed_mushroom.jpg" alt="Stuffed mushroom" style="height: 200px; object-fit: cover;">
+                            <div class="card-body">
+                                <h5 class="card-title">Stuffed Mushrooms</h5>
+                                <p class="card-text">Button mushrooms stuffed with herbs, cheese, and breadcrumbs.</p>
+                                <a href="https://www.delish.com/cooking/recipe-ideas/a20089643/easy-stuffed-mushroom-recipe/" class="btn btn-primary">View Recipe</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-md-6">
+                        <div class="card h-100">
+                            <img class="card-img-top" src="shrimp.jpg" alt="Shrimp Cocktail" style="height: 200px; object-fit: cover;">
+                            <div class="card-body">
+                                <h5 class="card-title">Shrimp Cocktail</h5>
+                                <p class="card-text">Chilled cooked shrimp served with tangy cocktail sauce</p>
+                                <a href="https://www.simplyrecipes.com/recipes/shrimp_cocktail/" class="btn btn-primary">View Recipe</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Courses -->
+            <div class="mb-5">
+                <h3 class="mb-4"><i class="fas fa-utensils text-primary me-2"></i>Main Courses</h3>
+                <div class="row g-4">
+                    <div class="col-lg-4 col-md-6">
+                        <div class="card h-100">
+                            <img class="card-img-top" src="salmon.jpg" alt="Herb-Crusted Salmon" style="height: 200px; object-fit: cover;">
+                            <div class="card-body">
+                                <h5 class="card-title">Herb-Crusted Salmon</h5>
+                                <p class="card-text">Fresh Atlantic salmon with a crispy herb and parmesan crust.</p>
+                                <a href="salmon_recipe.html" class="btn btn-primary">View Recipe</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-md-6">
+                        <div class="card h-100">
+                            <img class="card-img-top" src="beef_bourg.jpg" alt="Beef Bourguignon" style="height: 200px; object-fit: cover;">
+                            <div class="card-body">
+                                <h5 class="card-title">Beef Bourguignon</h5>
+                                <p class="card-text">Traditional French beef stew braised in red wine with vegetables.</p>
+                                <a href="#" class="btn btn-primary">View Recipe</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-md-6">
+                        <div class="card h-100">
+                            <img class="card-img-top" src="parmesan.jpg" alt="Chicken Parmesan" style="height: 200px; object-fit: cover;">
+                            <div class="card-body">
+                                <h5 class="card-title">Chicken Parmesan</h5>
+                                <p class="card-text">Crispy breaded chicken breast topped with marinara and mozzarella.</p>
+                                <a href="#" class="btn btn-primary">View Recipe</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Desserts -->
+            <div class="mb-5">
+                <h3 class="mb-4"><i class="fas fa-birthday-cake text-warning me-2"></i>Desserts</h3>
+                <div class="row g-4">
+                    <div class="col-lg-4 col-md-6">
+                        <div class="card h-100">
+                            <img class="card-img-top" src="chocolate.webp" alt="Chocolate Lava Cake" style="height: 200px; object-fit: cover;">
+                            <div class="card-body">
+                                <h5 class="card-title">Chocolate Lava Cake</h5>
+                                <p class="card-text">Decadent chocolate cake with a molten chocolate center.</p>
+                                <a href="https://www.recipetineats.com/chocolate-cake/" class="btn btn-primary">View Recipe</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-md-6">
+                        <div class="card h-100">
+                            <img class="card-img-top" src="tiramisu.webp" alt="Classic Tiramisu" style="height: 200px; object-fit: cover;">
+                            <div class="card-body">
+                                <h5 class="card-title">Classic Tiramisu</h5>
+                                <p class="card-text">Traditional Italian dessert with coffee-soaked ladyfingers and mascarpone.</p>
+                                <a href="https://tastesbetterfromscratch.com/easy-tiramisu/" class="btn btn-primary">View Recipe</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-md-6">
+                        <div class="card h-100">
+                            <img class="card-img-top" src="lemon.jpg" alt="Lemon Cheesecake" style="height: 200px; object-fit: cover;">
+                            <div class="card-body">
+                                <h5 class="card-title">Lemon Cheesecake</h5>
+                                <p class="card-text">Creamy New York-style cheesecake with a bright lemon twist.</p>
+                                <a href="https://sallysbakingaddiction.com/lemon-cheesecake-recipe/" class="btn btn-primary">View Recipe</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Simple Footer -->
+    <!-- Updated Footer with all required elements -->
+<footer class="bg-dark text-light py-4">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-8">
+                <!-- Navigation links in unordered list (as required) -->
+                <ul class="list-inline mb-2">
+                    <li class="list-inline-item">
+                        <a href="index.html" class="text-light text-decoration-none">Home</a>
+                    </li>
+                    <li class="list-inline-item">|</li>
+                    <li class="list-inline-item">
+                        <a href="about.html" class="text-light text-decoration-none">About</a>
+                    </li>
+                    <li class="list-inline-item">|</li>
+                    <li class="list-inline-item">
+                        <a href="recipe.html" class="text-light text-decoration-none">Recipes</a>
+                    </li>
+                    <li class="list-inline-item">|</li>
+                    <li class="list-inline-item">
+                        <a href="technique.html" class="text-light text-decoration-none">Techniques</a>
+                    </li>
+                    <li class="list-inline-item">|</li>
+                    <li class="list-inline-item">
+                        <a href="contact.html" class="text-light text-decoration-none">Contact</a>
+                    </li>
+                </ul>
+                
+                <!-- Required copyright and contact information -->
+                <div class="text-light">
+                    <p class="mb-1">© 2025 Culinary Craft. All rights reserved.</p>
+                    <p class="mb-0">Contact: <a href="mailto:info@culinarycraft.com" class="text-light">info@culinarycraft.com</a></p>
+                </div>
+            </div>
+            <div class="col-md-4 text-end">
+                <!-- Last update date (as required) -->
+                <div class="small text-muted">
+                    <p class="mb-1">Last updated: September 5, 2025</p>
+                    <p class="mb-0">Thank you for visiting!</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+</body>
+</html>
