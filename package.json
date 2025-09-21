@@ -5,7 +5,11 @@
   "main": "index.js",
   "scripts": {
     "start": "node .",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "npm run clean && npm run copy-files",
+    "clean": "rm -rf dist",
+    "copy-files": "mkdir -p dist && cp -r *.js package*.json dist/",
+    "package": "npm run build && cd dist && tar -czf ../web-server-${npm_package_version}.tar.gz ."
   },
   "keywords": [
     "node",
@@ -14,7 +18,7 @@
     "template",
     "sit774"
   ],
-  "author": "SIT774",
+  "author": "SIT223 - Xinyu",
   "license": "ISC",
   "dependencies": {
     "express": "^4.18.3"

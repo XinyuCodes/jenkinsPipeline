@@ -1,0 +1,96 @@
+pipeline {
+    agent any
+    
+    tools {
+        nodejs 'NodeJS-18' // Make sure this matches your Jenkins NodeJS configuration
+    }
+    
+    environment {
+        BUILD_VERSION = "${env.BUILD_NUMBER}"
+        ARTIFACT_NAME = "web-server-${BUILD_VERSION}.tar.gz"
+    }
+    
+    stages {
+        stage('Checkout') {
+            steps {
+                echo 'Checking out source code...'
+                git branch: 'main', url: 'https://github.com/XinyuCodes/jenkinsPipeline.git'
+            }
+        }
+        
+        stage('Install Dependencies') {
+            steps {
+                echo 'Installing Node.js dependencies...'
+                sh 'npm install --production'
+            }
+        }
+        
+        stage('Build') {
+            steps {
+                echo 'Building application...'
+                
+                // Clean previous builds
+                sh 'npm run clean'
+                
+                // Create distribution directory
+                sh 'mkdir -p dist'
+                
+                // Copy application files
+                sh '''
+                    cp *.js dist/ || echo "No JS files to copy"
+                    cp package.json dist/
+                    cp package-lock.json dist/ || echo "No package-lock.json found"
+                '''
+                
+                // Copy node_modules for production
+                sh 'cp -r node_modules dist/'
+                
+                // Create tarball artifact
+                sh '''
+                    cd dist
+                    tar -czf ../web-server-${BUILD_NUMBER}.tar.gz .
+                    cd ..
+                '''
+                
+                echo "Build artifact created: web-server-${BUILD_NUMBER}.tar.gz"
+            }
+        }
+        
+        stage('Archive Artifacts') {
+            steps {
+                echo 'Archiving build artifacts...'
+                
+                // Archive the main artifact
+                archiveArtifacts artifacts: 'web-server-*.tar.gz', fingerprint: true
+                
+                // Also archive the dist directory contents
+                archiveArtifacts artifacts: 'dist/**/*', allowEmptyArchive: true
+                
+                // Create and archive build info
+                sh '''
+                    echo "Build Number: ${BUILD_NUMBER}" > build-info.txt
+                    echo "Build Date: $(date)" >> build-info.txt
+                    echo "Git Commit: ${GIT_COMMIT}" >> build-info.txt
+                    echo "Node Version: $(node --version)" >> build-info.txt
+                    echo "NPM Version: $(npm --version)" >> build-info.txt
+                '''
+                
+                archiveArtifacts artifacts: 'build-info.txt', fingerprint: true
+            }
+        }
+    }
+    
+    post {
+        always {
+            echo 'Cleaning up workspace...'
+            // Clean up but keep artifacts
+            sh 'rm -rf dist'
+        }
+        success {
+            echo "Build successful! Artifact: web-server-${BUILD_NUMBER}.tar.gz"
+        }
+        failure {
+            echo 'Build failed!'
+        }
+    }
+}
