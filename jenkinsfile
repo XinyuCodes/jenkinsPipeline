@@ -2,7 +2,7 @@ pipeline {
     agent any
     
     tools {
-        nodejs 'NodeJS-18' // Make sure this matches your Jenkins NodeJS configuration
+        nodejs 'node-19' // Changed to match your Jenkins configuration
     }
     
     environment {
@@ -14,7 +14,7 @@ pipeline {
         stage('Checkout') {
             steps {
                 echo 'Checking out source code...'
-                git branch: 'main', url: 'https://github.com/XinyuCodes/jenkinsPipeline.git'
+                checkout scm
             }
         }
         
@@ -29,23 +29,17 @@ pipeline {
             steps {
                 echo 'Building application...'
                 
-                // Clean previous builds
                 sh 'npm run clean'
-                
-                // Create distribution directory
                 sh 'mkdir -p dist'
                 
-                // Copy application files
                 sh '''
                     cp *.js dist/ || echo "No JS files to copy"
                     cp package.json dist/
                     cp package-lock.json dist/ || echo "No package-lock.json found"
                 '''
                 
-                // Copy node_modules for production
                 sh 'cp -r node_modules dist/'
                 
-                // Create tarball artifact
                 sh '''
                     cd dist
                     tar -czf ../web-server-${BUILD_NUMBER}.tar.gz .
@@ -60,13 +54,9 @@ pipeline {
             steps {
                 echo 'Archiving build artifacts...'
                 
-                // Archive the main artifact
                 archiveArtifacts artifacts: 'web-server-*.tar.gz', fingerprint: true
-                
-                // Also archive the dist directory contents
                 archiveArtifacts artifacts: 'dist/**/*', allowEmptyArchive: true
                 
-                // Create and archive build info
                 sh '''
                     echo "Build Number: ${BUILD_NUMBER}" > build-info.txt
                     echo "Build Date: $(date)" >> build-info.txt
@@ -83,7 +73,6 @@ pipeline {
     post {
         always {
             echo 'Cleaning up workspace...'
-            // Clean up but keep artifacts
             sh 'rm -rf dist'
         }
         success {
