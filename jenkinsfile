@@ -25,14 +25,66 @@ pipeline {
             }
         }
         
+        stage('Code Quality Analysis') {
+            steps {
+                echo 'Running code quality analysis...'
+                
+                // Create reports directory
+                sh 'mkdir -p reports'
+                
+                // Run ESLint for code quality
+                script {
+                    try {
+                        sh 'npm run lint'
+                        echo 'ESLint analysis completed!'
+                    } catch (Exception e) {
+                        echo 'ESLint found issues, but continuing...'
+                        currentBuild.result = 'UNSTABLE'
+                    }
+                }
+                
+                // Generate HTML report
+                sh 'npm run lint:report'
+                
+                // Display lint results summary
+                script {
+                    if (fileExists('lint-results.json')) {
+                        def lintResults = readFile('lint-results.json')
+                        def results = readJSON text: lintResults
+                        def errorCount = 0
+                        def warningCount = 0
+                        
+                        results.each { file ->
+                            errorCount += file.errorCount
+                            warningCount += file.warningCount
+                        }
+                        
+                        echo "Code Quality Summary:"
+                        echo "- Errors: ${errorCount}"
+                        echo "- Warnings: ${warningCount}"
+                        echo "- Files analyzed: ${results.size()}"
+                        
+                        if (errorCount > 0) {
+                            currentBuild.result = 'UNSTABLE'
+                            echo "Code quality issues found! Check the reports."
+                        }
+                    }
+                }
+            }
+            post {
+                always {
+                    // Archive lint reports
+                    archiveArtifacts artifacts: 'lint-*.json,lint-*.html', allowEmptyArchive: true
+                }
+            }
+        }
+        
         stage('Test') {
             steps {
                 echo 'Running automated tests...'
                 
-                // Create test results directory
                 sh 'mkdir -p test-results'
                 
-                // Run unit tests
                 script {
                     try {
                         sh 'npm run test:unit'
@@ -43,7 +95,6 @@ pipeline {
                     }
                 }
                 
-                // Run integration tests
                 script {
                     try {
                         sh 'npm run test:integration'
@@ -54,21 +105,10 @@ pipeline {
                     }
                 }
                 
-                // Run all tests with coverage for CI
                 sh 'npm run test:ci'
             }
             post {
                 always {
-                    // Publish test results (if you want detailed reporting)
-                    publishHTML([
-                        allowMissing: false,
-                        alwaysLinkToLastBuild: true,
-                        keepAll: true,
-                        reportDir: 'coverage/lcov-report',
-                        reportFiles: 'index.html',
-                        reportName: 'Coverage Report'
-                    ])
-                    
                     // Archive coverage data
                     archiveArtifacts artifacts: 'coverage/**/*', allowEmptyArchive: true
                 }
@@ -113,7 +153,8 @@ pipeline {
                     echo "Git Commit: ${GIT_COMMIT}" >> build-info.txt
                     echo "Node Version: $(node --version)" >> build-info.txt
                     echo "NPM Version: $(npm --version)" >> build-info.txt
-                    echo "Test Results: Tests completed successfully" >> build-info.txt
+                    echo "Tests: Completed" >> build-info.txt
+                    echo "Code Quality: Analyzed with ESLint" >> build-info.txt
                 '''
                 
                 archiveArtifacts artifacts: 'build-info.txt', fingerprint: true
@@ -125,15 +166,29 @@ pipeline {
         always {
             echo 'Cleaning up workspace...'
             sh 'rm -rf dist'
+            
+            // Publish build summary
+            script {
+                def buildStatus = currentBuild.result ?: 'SUCCESS'
+                echo "Pipeline completed with status: ${buildStatus}"
+                
+                if (fileExists('lint-results.json')) {
+                    echo "Code quality report available in build artifacts"
+                }
+                
+                if (fileExists('coverage/lcov-report/index.html')) {
+                    echo "Test coverage report available in build artifacts"
+                }
+            }
         }
         success {
-            echo "Build and tests successful! Artifact: web-server-${BUILD_NUMBER}.tar.gz"
+            echo "Build, tests, and code quality checks successful!"
         }
         failure {
-            echo 'Build or tests failed!'
+            echo 'Pipeline failed!'
         }
         unstable {
-            echo 'Build completed but some tests failed!'
+            echo 'Pipeline completed but with quality issues!'
         }
     }
 }
