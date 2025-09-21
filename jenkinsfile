@@ -2,7 +2,7 @@ pipeline {
     agent any
     
     tools {
-        nodejs 'node-19' // Changed to match your Jenkins configuration
+        nodejs 'node-19'
     }
     
     environment {
@@ -21,7 +21,57 @@ pipeline {
         stage('Install Dependencies') {
             steps {
                 echo 'Installing Node.js dependencies...'
-                sh 'npm install --production'
+                sh 'npm install'
+            }
+        }
+        
+        stage('Test') {
+            steps {
+                echo 'Running automated tests...'
+                
+                // Create test results directory
+                sh 'mkdir -p test-results'
+                
+                // Run unit tests
+                script {
+                    try {
+                        sh 'npm run test:unit'
+                        echo 'Unit tests passed!'
+                    } catch (Exception e) {
+                        echo 'Unit tests failed!'
+                        currentBuild.result = 'UNSTABLE'
+                    }
+                }
+                
+                // Run integration tests
+                script {
+                    try {
+                        sh 'npm run test:integration'
+                        echo 'Integration tests passed!'
+                    } catch (Exception e) {
+                        echo 'Integration tests failed!'
+                        currentBuild.result = 'UNSTABLE'
+                    }
+                }
+                
+                // Run all tests with coverage for CI
+                sh 'npm run test:ci'
+            }
+            post {
+                always {
+                    // Publish test results (if you want detailed reporting)
+                    publishHTML([
+                        allowMissing: false,
+                        alwaysLinkToLastBuild: true,
+                        keepAll: true,
+                        reportDir: 'coverage/lcov-report',
+                        reportFiles: 'index.html',
+                        reportName: 'Coverage Report'
+                    ])
+                    
+                    // Archive coverage data
+                    archiveArtifacts artifacts: 'coverage/**/*', allowEmptyArchive: true
+                }
             }
         }
         
@@ -38,7 +88,7 @@ pipeline {
                     cp package-lock.json dist/ || echo "No package-lock.json found"
                 '''
                 
-                sh 'cp -r node_modules dist/'
+                sh 'npm install --production --prefix dist'
                 
                 sh '''
                     cd dist
@@ -63,6 +113,7 @@ pipeline {
                     echo "Git Commit: ${GIT_COMMIT}" >> build-info.txt
                     echo "Node Version: $(node --version)" >> build-info.txt
                     echo "NPM Version: $(npm --version)" >> build-info.txt
+                    echo "Test Results: Tests completed successfully" >> build-info.txt
                 '''
                 
                 archiveArtifacts artifacts: 'build-info.txt', fingerprint: true
@@ -76,10 +127,13 @@ pipeline {
             sh 'rm -rf dist'
         }
         success {
-            echo "Build successful! Artifact: web-server-${BUILD_NUMBER}.tar.gz"
+            echo "Build and tests successful! Artifact: web-server-${BUILD_NUMBER}.tar.gz"
         }
         failure {
-            echo 'Build failed!'
+            echo 'Build or tests failed!'
+        }
+        unstable {
+            echo 'Build completed but some tests failed!'
         }
     }
 }

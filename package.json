@@ -5,11 +5,13 @@
   "main": "index.js",
   "scripts": {
     "start": "node .",
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest --coverage --detectOpenHandles",
+    "test:unit": "jest tests/unit --coverage",
+    "test:integration": "jest tests/integration --coverage",
+    "test:ci": "jest --coverage --watchAll=false --detectOpenHandles --forceExit",
     "build": "npm run clean && npm run copy-files",
     "clean": "rm -rf dist",
-    "copy-files": "mkdir -p dist && cp -r *.js package*.json dist/",
-    "package": "npm run build && cd dist && tar -czf ../web-server-${npm_package_version}.tar.gz ."
+    "copy-files": "mkdir -p dist && cp -r *.js package*.json dist/"
   },
   "keywords": [
     "node",
@@ -18,9 +20,28 @@
     "template",
     "sit774"
   ],
-  "author": "SIT223 - Xinyu",
+  "author": "SIT774",
   "license": "ISC",
   "dependencies": {
     "express": "^4.18.3"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "supertest": "^6.3.4",
+    "@types/jest": "^29.5.8"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "coverageDirectory": "coverage",
+    "collectCoverageFrom": [
+      "*.js",
+      "!coverage/**",
+      "!node_modules/**",
+      "!dist/**"
+    ],
+    "testMatch": [
+      "**/tests/**/*.test.js",
+      "**/__tests__/**/*.js"
+    ]
   }
 }
