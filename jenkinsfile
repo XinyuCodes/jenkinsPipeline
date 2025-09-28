@@ -71,6 +71,8 @@ pipeline {
                     }
                 }
             }
+
+            
             post {
                 always {
                     // Archive lint reports
@@ -158,6 +160,19 @@ pipeline {
                 '''
                 
                 archiveArtifacts artifacts: 'build-info.txt', fingerprint: true
+            }
+        }
+
+        stage('Security Stage') {
+            steps {
+                echo 'Running security stage'
+                sh 'npm audit'
+
+                //capture output
+                sh 'npm audit --json > security-audit.json'
+                //keep pipeline running 
+                sh 'npm audit --json > security-audit.json ||true'
+
             }
         }
     }
