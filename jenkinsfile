@@ -166,12 +166,27 @@ pipeline {
         stage('Security Stage') {
             steps {
                 echo 'Running security stage'
-                sh 'npm audit'
 
-                //capture output
-                sh 'npm audit --json > security-audit.json'
-                //keep pipeline running 
+                //running security and saving out as a json file
                 sh 'npm audit --json > security-audit.json ||true'
+
+                //reading and parsing the json 
+                script {
+                    if (fileExists('security-audit.json')){
+                        def auditResults = readJson file: 'security-audit.json'
+                        def totalVulns = auditResults.metadata.vulnerabilities.total 
+
+                        //checking how many high vulnerabilities do we have 
+                        def highVulns = auditResults.metadata.vulnerabilities.high
+
+
+                        echo "Security Scan Results:"
+                        echo "- Total vulnerabilities: ${totalVulns}"
+                        echo "- High severities: ${highVulns}"
+
+
+                    }
+                }
 
             }
         }
