@@ -173,7 +173,7 @@ pipeline {
                 //reading and parsing the json 
                 script {
                     if (fileExists('security-audit.json')){
-                        def auditResults = readJson file: 'security-audit.json'
+                        def auditResults = readJSON file: 'security-audit.json'
                         def totalVulns = auditResults.metadata.vulnerabilities.total 
 
                         //checking how many high vulnerabilities do we have 
