@@ -208,33 +208,36 @@ pipeline {
             }
         }
 
-        stage('Deploy Stage'){
+        stage('Deploy Stage') {
             steps{
-                echo 'deplying to docker container'
+                echo 'deplying to staging environment'
 
                 script{
-                    //build docker image 
-                    sh 'docker build -t web-server:${BUILD_NUMBER}.'
-
-                    //remove old containers
-                    sh 'docker stop web-server-staging || true'
-                    sh 'docker rm web-server-staging || true'
-
-                    //run new container
-                    sh 'docker run -d -p 8080:3000 --name web-server-staging web-server:${BUILD_NUMBER}'
-
-                    //wait for container to start 
-                    sh sleep 5
-
-                    //verify it's running 
-                    sh 'docker ps | grep web-server-staging'
+                   // Create staging directory
+                sh 'mkdir -p staging'
+                
+                // Clean old deployment
+                sh 'rm -rf staging/*'
+                
+                // Extract build artifact to staging
+                sh 'tar -xzf web-server-${BUILD_NUMBER}.tar.gz -C staging'
+                
+                // Copy public_html directory
+                sh 'cp -r public_html staging/ || true'
+                
+                // Verify deployment
+                sh 'ls -la staging/'
+                
+                echo 'Deployment completed successfully!'
+                echo 'Application deployed to: staging/'
+                echo 'Files deployed:'
+                sh 'find staging -type f'
                 }
-
-                echo 'Application deployed'
-                echo 'Access at http://localhols:8080'
+                }
+                }
             }
         }
-    }
+    
     
     post {
         always {
