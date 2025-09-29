@@ -29,10 +29,8 @@ pipeline {
             steps {
                 echo 'Running code quality analysis...'
                 
-                // Create reports directory
                 sh 'mkdir -p reports'
                 
-                // Run ESLint for code quality
                 script {
                     try {
                         sh 'npm run lint'
@@ -43,10 +41,8 @@ pipeline {
                     }
                 }
                 
-                // Generate HTML report
                 sh 'npm run lint:report'
                 
-                // Display lint results summary
                 script {
                     if (fileExists('lint-results.json')) {
                         def lintResults = readFile('lint-results.json')
@@ -71,11 +67,8 @@ pipeline {
                     }
                 }
             }
-
-            
             post {
                 always {
-                    // Archive lint reports
                     archiveArtifacts artifacts: 'lint-*.json,lint-*.html', allowEmptyArchive: true
                 }
             }
@@ -111,7 +104,6 @@ pipeline {
             }
             post {
                 always {
-                    // Archive coverage data
                     archiveArtifacts artifacts: 'coverage/**/*', allowEmptyArchive: true
                 }
             }
@@ -125,7 +117,7 @@ pipeline {
                 sh 'mkdir -p dist'
                 
                 sh '''
-                    cp *.js dist/ || echo "No JS files to copy"
+                    cp index.js dist/
                     cp package.json dist/
                     cp package-lock.json dist/ || echo "No package-lock.json found"
                 '''
@@ -167,24 +159,19 @@ pipeline {
             steps {
                 echo 'Running security stage'
 
-                //running security and saving out as a json file
                 sh 'npm audit --json > security-audit.json || true'
 
-                //reading and parsing the json 
                 script {
-                    if (fileExists('security-audit.json')){
+                    if (fileExists('security-audit.json')) {
                         def auditResults = readJSON file: 'security-audit.json'
                         def totalVulns = auditResults.metadata.vulnerabilities.total 
-
-                        //checking how many high vulnerabilities do we have 
-                        def highVulns = auditResults.metadata.vulnerabilities.high ?:0
-                        def critVulns = auditResults.metadata.vulnerabilities.critical ?:0 
+                        def highVulns = auditResults.metadata.vulnerabilities.high ?: 0
+                        def critVulns = auditResults.metadata.vulnerabilities.critical ?: 0 
 
                         echo "Security Scan Results:"
                         echo "- Total vulnerabilities: ${totalVulns}"
                         echo "- High severities: ${highVulns}"
                         echo "- Critical severities: ${critVulns}"
-
 
                         if (critVulns > 0 || highVulns > 0) {
                             currentBuild.result = 'UNSTABLE'
@@ -194,57 +181,45 @@ pipeline {
                             echo "Low/moderate vulnerabilities found - review recommended!"
                         } else {
                             echo "No security vulnerabilities detected!"
-                        }                 
-
+                        }
                     }
                 }
-
             }
-
             post {
-                always{
+                always {
                     archiveArtifacts artifacts: 'security-audit.json', allowEmptyArchive: true
                 }
             }
         }
 
         stage('Deploy Stage') {
-            steps{
-                echo 'deplying to staging environment'
+            steps {
+                echo 'Deploying to staging environment...'
 
-                script{
-                   // Create staging directory
-                sh 'mkdir -p staging'
-                
-                // Clean old deployment
-                sh 'rm -rf staging/*'
-                
-                // Extract build artifact to staging
-                sh 'tar -xzf web-server-${BUILD_NUMBER}.tar.gz -C staging'
-                
-                // Copy public_html directory
-                sh 'cp -r public_html staging/ || true'
-                
-                // Verify deployment
-                sh 'ls -la staging/'
-                
-                echo 'Deployment completed successfully!'
-                echo 'Application deployed to: staging/'
-                echo 'Files deployed:'
-                sh 'find staging -type f'
-                }
-                }
-                }
+                script{ 
+                    sh 'mkdir -p staging'
+                    sh "rm -rf staging/*"
+                        sh 'tar -xzf web-server-${BUILD_NUMBER}.tar.gz -C staging'
+                    sh 'cp -r public_html staging/ || true'
+                    sh 'ls -la staging/'
+                    
+                    echo 'Deployment completed successfully!'
+                    echo 'Application deployed to: staging/'
+                    echo 'Files deployed:'
+                    sh 'find staging -type f'
+                    }
+                   
+              
+                // }
             }
         }
-    
+    }
     
     post {
         always {
             echo 'Cleaning up workspace...'
             sh 'rm -rf dist'
             
-            // Publish build summary
             script {
                 def buildStatus = currentBuild.result ?: 'SUCCESS'
                 echo "Pipeline completed with status: ${buildStatus}"
