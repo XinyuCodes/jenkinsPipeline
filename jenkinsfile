@@ -168,7 +168,7 @@ pipeline {
                 echo 'Running security stage'
 
                 //running security and saving out as a json file
-                sh 'npm audit --json > security-audit.json ||true'
+                sh 'npm audit --json > security-audit.json || true'
 
                 //reading and parsing the json 
                 script {
@@ -177,17 +177,61 @@ pipeline {
                         def totalVulns = auditResults.metadata.vulnerabilities.total 
 
                         //checking how many high vulnerabilities do we have 
-                        def highVulns = auditResults.metadata.vulnerabilities.high
-
+                        def highVulns = auditResults.metadata.vulnerabilities.high ?:0
+                        def critVulns = auditResults.metadata.vulnerabilities.critical ?:0 
 
                         echo "Security Scan Results:"
                         echo "- Total vulnerabilities: ${totalVulns}"
                         echo "- High severities: ${highVulns}"
+                        echo "- Critical severities: ${critVulns}"
 
+
+                        if (critVulns > 0 || highVulns > 0) {
+                            currentBuild.result = 'UNSTABLE'
+                            echo "High/Critical Vulnerabilities found!"
+                            echo "Please review the security-audit.json for more details!"
+                        } else if (totalVulns > 0) {
+                            echo "Low/moderate vulnerabilities found - review recommended!"
+                        } else {
+                            echo "No security vulnerabilities detected!"
+                        }                 
 
                     }
                 }
 
+            }
+
+            post {
+                always{
+                    archiveArtifacts artifacts: 'security-audit.json', allowEmptyArchive: true
+                }
+            }
+        }
+
+        stage('Deploy Stage'){
+            steps{
+                echo 'deplying to docker container'
+
+                script{
+                    //build docker image 
+                    sh 'docker build -t web-server:${BUILD_NUMBER}.'
+
+                    //remove old containers
+                    sh 'docker stop web-server-staging || true'
+                    sh 'docker rm web-server-staging || true'
+
+                    //run new container
+                    sh 'docker run -d -p 8080:3000 --name web-server-staging web-server:${BUILD_NUMBER}'
+
+                    //wait for container to start 
+                    sh sleep 5
+
+                    //verify it's running 
+                    sh 'docker ps | grep web-server-staging'
+                }
+
+                echo 'Application deployed'
+                echo 'Access at http://localhols:8080'
             }
         }
     }
