@@ -208,9 +208,27 @@ pipeline {
                     echo 'Files deployed:'
                     sh 'find staging -type f'
                     }
-                   
-              
-                // }
+            }
+        }
+
+        stage('Release Stage'){
+            steps {
+                echo 'Deploying to production environment'
+
+                script{
+                    
+                    sh 'rm -rf production'
+                    sh 'mkdir -p production'
+                    // sh 'tar -xzf web-server-${BUILD_NUMBER}.tar.gz -C production'
+                    sh "cp -r staging/* production/"
+                    sh 'echo "This is built on date $(date)"' >> production/RELEASE.text
+                    sh 'echo "This is build number on ${BUILD_NUMBER}"' >> production/RELEASE.text
+
+                    echo 'Production completed successfully!'
+                    
+                    
+                
+                }
             }
         }
     }
