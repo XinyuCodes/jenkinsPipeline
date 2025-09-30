@@ -228,6 +228,22 @@ pipeline {
                 }
             }
         }
+
+        stage('Monitoring and Alerting'){
+            steps{
+                echo 'Setting up monitoring and alerting'
+
+                script { 
+                    sh 'mkdir -p production/logs'
+                    sh 'touch production/logs/app.log'
+                    sh 'touch production/logs/error.log'
+
+                    sh "echo 'Monitoring Configuration' > monitoring-config.txt"
+                    sh "echo 'Application: web-server' >>monitoring-config.txt"
+                    sh "elcho 'Alert Email: team@example.com'>>monitoring-config.txt"
+                }
+            }
+        }
     }
     
     post {
