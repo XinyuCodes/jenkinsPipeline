@@ -221,7 +221,7 @@ pipeline {
                     sh 'mkdir -p production'
                     // sh 'tar -xzf web-server-${BUILD_NUMBER}.tar.gz -C production'
                     sh "cp -r staging/* production/"
-                    sh "echo 'This is built on date $(date)' >> production/RELEASE.text"
+                    sh "echo 'This is built on date \$(date)' >> production/RELEASE.text"
                     sh "echo 'This is build number on ${BUILD_NUMBER}' >> production/RELEASE.text"
 
                     echo 'Production completed successfully!'
