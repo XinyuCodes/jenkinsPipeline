@@ -240,7 +240,7 @@ pipeline {
 
                     sh "echo 'Monitoring Configuration' > monitoring-config.txt"
                     sh "echo 'Application: web-server' >>monitoring-config.txt"
-                    sh "elcho 'Alert Email: team@example.com'>>monitoring-config.txt"
+                    sh "echo 'Alert Email: team@project.com'>>monitoring-config.txt"
                 }
             }
         }
